@@ -20,46 +20,46 @@
 - 按照官方的资料，训练集的基本格式如下：
 
 ```
-	{
-		"conversations": [
-			{"role": "user",
-			 "content": "类型#上衣*材质#牛仔布*颜色#白色*风格#简约*图案#刺绣*衣样式#外套*衣款式#破洞"
-				}, 
-			{"role": "assistant", 
-				"content": "简约而不简单的牛仔外套，白色的衣身十分百搭。衣身多处有做旧破洞设计，打破单调乏味，增加一丝造型看点。衣身后背处有趣味刺绣装饰，丰富层次感，彰显别样时尚。"
-				}
-				]
-			}
+{
+	"conversations": [
+		{"role": "user",
+			"content": "类型#上衣*材质#牛仔布*颜色#白色*风格#简约*图案#刺绣*衣样式#外套*衣款式#破洞"
+			}, 
+		{"role": "assistant", 
+			"content": "简约而不简单的牛仔外套，白色的衣身十分百搭。衣身多处有做旧破洞设计，打破单调乏味，增加一丝造型看点。衣身后背处有趣味刺绣装饰，丰富层次感，彰别样时尚。"
+		}
+			]
+}
 ```
 
 - 多轮对话的训练集的格式：
 
 ```
-  {
-    "conversations": [
-      {
+{
+  "conversations": [
+    {
         "role": "system",
         "content": "<system prompt text>"
-      },
-      {
+    },
+    {
         "role": "user",
         "content": "<user prompt text>"
-      },
-      {
+    },
+    {
         "role": "assistant",
         "content": "<assistant response text>"
-      },
+    },
       // ... Muti Turn
-      {
+    {
         "role": "user",
         "content": "<user prompt text>"
-      },
-      {
+     },
+     {
         "role": "assistant",
         "content": "<assistant response text>"
-      }
+    }
     ]
-  }
+}
   // ...
 
 ```
@@ -67,47 +67,47 @@
 - 如果希望微调模型的对话和工具能力，应该按照以下格式整理数据。
   
 ```
-  {
-    "tools": [
+{
+  "tools": [
       // available tools, format is not restricted
     ],
     "conversations": [
-      {
+    {
         "role": "system",
         "content": "<system prompt text>"
-      },
-      {
+    },
+    {
         "role": "user",
         "content": "<user prompt text>"
-      },
-      {
+    },
+    {
         "role": "assistant",
         "content": "<assistant thought to text>"
-      },
-      {
+    },
+    {
         "role": "tool",
         "name": "<name of the tool to be called",
         "parameters": {
           "<parameter_name>": "<parameter_value>"
-        },
+      },
         "observation": "<observation>"
         // don't have to be string
-      },
-      {
+    },
+    {
         "role": "assistant",
         "content": "<assistant response to observation>"
-      },
-      // ... Muti Turn
-      {
+    },
+    // ... Muti Turn
+    {
         "role": "user",
         "content": "<user prompt text>"
-      },
-      {
+    },
+    {
         "role": "assistant",
         "content": "<assistant response text>"
-      }
-    ]
-  }
+    }
+  ]
+}
   // ...
 
 ```
@@ -146,17 +146,17 @@
       test_file: dev.json
       num_proc: 16
     max_input_length: 128
-    max_output_length: 256
+    max_output_length: 256 #微调模型输出的最大长度
     training_args:
       # see `transformers.Seq2SeqTrainingArguments`
       output_dir: ./output
       max_steps: 3000
       # settings for data loading
       per_device_train_batch_size: 16
-      dataloader_num_workers: 16
+      dataloader_num_workers: 16 #数据加载时使用的工作进程数
       remove_unused_columns: false
       # settings for saving checkpoints
-      save_strategy: steps
+      save_strategy: steps #保存策略，默认是按步数保存（steps）
       save_steps: 500
       # settings for logging
       log_level: info
@@ -176,12 +176,12 @@
         max_new_tokens: 256
       # set your absolute deepspeed path here
       #deepspeed: ds_zero_2.json
-    peft_config:
+    peft_config:   #Huggingface PEFT 框架的相关参数，peft_type 选择高效微调的方式，可以为LORA 或者 PREFIX_TUNING，并需要搭配对应的参数。
       peft_type: LORA
       task_type: CAUSAL_LM
       r: 8
-      lora_alpha: 32
-      lora_dropout: 0.1
+      lora_alpha: 32 #是控制LoRA调整幅度的参数。它决定了对原始模型参数的修改程度。较高的lora_alpha值意味着对原始模型参数的更大调整，这可能有助于模型更好地适应新的任务或数据，但也可能导致过拟合。较低的值则意味着较小的调整，可能保持模型的泛化能力，但可能不足以充分适应新任务。
+      lora_dropout: 0.1 #指的是在LoRA层应用的dropout比率。这意味着在训练过程中，网络的一部分连接会随机断开，以防止模型过度依赖于训练数据中的特定模式。较高的dropout比率可以增加模型的泛化能力，但也可能导致学习效率降低。
     
     ```
     
